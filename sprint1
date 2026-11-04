@@ -6,4 +6,8 @@ Focado em produtos físicos vs. produtos digitais com regras de frete e envio.
  ⁠ProdutoDigital⁠ (ex: E-book, Software): Não tem frete, mas adiciona o tamanho do arquivo em MB e o link de download.
  Interfaces: Uma interface ⁠Vendivel⁠ que obriga a implementar regras de desconto.
  Polimorfismo / Composição: Um ⁠CarrinhoDeCompras⁠ que aceita qualquer tipo de ⁠Produto⁠ e calcula o total da compra polimorficamente.
- Exceções: ⁠ProdutoForaDeEstoqueException⁠ ou ⁠DownloadExpiradoException⁠.*/
+ Exceções: ⁠ProdutoForaDeEstoqueException⁠ ou ⁠DownloadExpiradoException⁠.
+Equipe:
+Gabriel Felipe Silva Borges 
+Gabriel Schilachta dos Reis
+Gustavo dos Santos*/
