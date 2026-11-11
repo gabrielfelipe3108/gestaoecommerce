@@ -18,7 +18,7 @@ public class Main {
             System.out.println("2. Acessar como Funcionário (Gerenciar Estoque/Produtos)");
             System.out.println("3. Ver Informações do Distribuidor");
             System.out.println("0. Sair");
-            System.out.print("Escolha uma opção: ");
+            System.out.print("Escolha uma opcao: ");
             
             if (scanner.hasNextInt()) {
                 opcao = scanner.nextInt();
