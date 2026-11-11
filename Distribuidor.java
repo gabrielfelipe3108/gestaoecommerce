@@ -14,7 +14,6 @@ public class Distribuidor extends Pessoa {
         this.cnpj = cnpj;
     }
 
-    public void fornecerProdutos() {
-        // Lógica de negócio de fornecimento
-    }
+    public void fornecerProdutos(Estoque estoque, Produto produto, int quantidade) {
+    estoque.adicionarEstoque(produto, quantidade);
 }
