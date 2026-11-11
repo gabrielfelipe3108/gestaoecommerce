@@ -1,21 +1,3 @@
-/**
- * TAREFA: implementar a classe Estoque (associação "controla" com Produto, 0..*).
- *
- * - Atributos PRIVADOS e final: Map<Integer, Produto> produtos e
- *   Map<Integer, Integer> quantidades (chave = codigo do produto). Usar LinkedHashMap.
- * - void adicionarEstoque(Produto produto, int quantidade):
- *   valida produto != null e quantidade > 0; cadastra o produto se for novo
- *   (putIfAbsent) e soma a quantidade (merge).
- * - void removerEstoque(int codigo, int quantidade):
- *   erro se o código não existir, se quantidade <= 0 ou se quantidade > disponível.
- *   O estoque nunca pode ficar negativo.
- * - int consultarEstoque(int codigo): retorna a quantidade (0 se não existir).
- * - Produto buscarProduto(int codigo): retorna o produto ou null.
- * - List<Produto> listarProdutos(): retorna lista NÃO modificável (cópia).
- * - Erros: IllegalArgumentException com mensagem clara em português.
- * - PROIBIDO usar Scanner ou System.out.
- * faca os comentarios sempre do lado direito e faca um codigo simples para entender e explicar pro meu professor de poo, to comecando em java agora
- */
 public class Estoque { // classe Estoque
     private final Map<Integer, Produto> produtos; // mapa de produtos (chave = código do produto)
     private final Map<Integer, Integer> quantidades; // mapa de quantidades (chave = código do produto)
