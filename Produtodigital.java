@@ -1,8 +1,8 @@
-public class Produtodigital  extends Produto { // classe ProdutoDigital que herda de Produto
+public class ProdutoDigital  extends Produto { // classe ProdutoDigital que herda de Produto
     private double tamanhoArquivoMB; // atributo privado tamanhoArquivoMB
     private String linkDownload; // atributo privado linkDownload
 
-    public Produtodigital(int codigo, String nome, double precoBase, double tamanhoArquivoMB, String linkDownload) { // construtor com validação
+    public ProdutoDigital(int codigo, String nome, double precoBase, double tamanhoArquivoMB, String linkDownload) { // construtor com validação
         super(codigo, nome, precoBase); // chama o construtor da superclasse Produto
         if (tamanhoArquivoMB <= 0) { // validação do tamanhoArquivoMB
             throw new IllegalArgumentException("Tamanho do arquivo deve ser maior que zero."); // exceção se inválido
