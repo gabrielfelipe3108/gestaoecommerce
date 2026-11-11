@@ -15,5 +15,6 @@ public class Distribuidor extends Pessoa {
     }
 
     public void fornecerProdutos(Estoque estoque, Produto produto, int quantidade) {
-    estoque.adicionarEstoque(produto, quantidade);
+        estoque.adicionarEstoque(produto, quantidade);
+    }
 }

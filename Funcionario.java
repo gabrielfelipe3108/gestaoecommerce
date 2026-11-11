@@ -3,10 +3,14 @@ public class Funcionario extends Pessoa{
     private String matricula;
     private Estoque estoque;
 
+    public Funcionario(String nome, String cpf, String email, String matricula) {
+        this(nome, cpf, email, matricula, new Estoque());
+    }
+
     public Funcionario(String nome, String cpf, String email, String matricula, Estoque estoque) {
         super(nome, cpf, email);
         this.matricula = matricula;
-        this.estoque = estoque;
+        this.estoque = estoque == null ? new Estoque() : estoque;
     }
 
     public String getMatricula() {
