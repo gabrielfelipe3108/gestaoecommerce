@@ -1,4 +1,4 @@
-public class ProdutoDigital  extends Produto { // classe ProdutoDigital que herda de Produto
+public class ProdutoDigital extends Produto { // classe ProdutoDigital que herda de Produto
     private double tamanhoArquivoMB; // atributo privado tamanhoArquivoMB
     private String linkDownload; // atributo privado linkDownload
 
