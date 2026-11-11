@@ -41,3 +41,4 @@ public class ProdutoFisico extends Produto { // classe ProdutoFisico que herda d
     public double calcularPrecoFinal() { // sobrescreve o método calcularPrecoFinal da superclasse Produto
         return getPrecoBase() + calcularFrete(); // retorna o preço base mais o frete calculado
     }
+}
