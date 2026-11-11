@@ -1,3 +1,9 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Estoque { // classe Estoque
     private final Map<Integer, Produto> produtos; // mapa de produtos (chave = código do produto)
     private final Map<Integer, Integer> quantidades; // mapa de quantidades (chave = código do produto)
