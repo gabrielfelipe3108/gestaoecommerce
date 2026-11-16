@@ -1,3 +1,5 @@
+package logica;
+
 public abstract class Produto {// classe Produto
     private int codigo; // atributo privado codigo
     private String nome; // atributo privado nome

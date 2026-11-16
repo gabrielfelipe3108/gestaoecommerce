@@ -1,3 +1,5 @@
+package logica;
+
 public class ProdutoFisico extends Produto { // classe ProdutoFisico que herda de Produto
     private double peso; // atributo privado peso
     private String dimensoes; // atributo privado dimensoes

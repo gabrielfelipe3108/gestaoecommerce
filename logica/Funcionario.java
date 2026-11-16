@@ -1,3 +1,5 @@
+package logica;
+
 import java.util.List;
 public class Funcionario extends Pessoa{
     private String matricula;

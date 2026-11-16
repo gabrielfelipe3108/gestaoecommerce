@@ -1,3 +1,5 @@
+package logica;
+
 public class Cliente extends Pessoa{
     private String endereco;
 
