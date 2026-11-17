@@ -65,11 +65,8 @@ public class JanelaPrincipal extends JFrame {
     }
 
     private void abrirTelaFuncionario() {
-        // Feedback visual temporário (futuramente chamará a TelaFuncionario.java)
-        JOptionPane.showMessageDialog(this, 
-            "Acessando Area do Funcionario: " + funcExemplo.getNome() + "\n(Tela de Funcionario em construcao para o proximo passo)", 
-            "Area do Funcionario", 
-            JOptionPane.INFORMATION_MESSAGE);
+        TelaFuncionario telaFuncionario = new TelaFuncionario(funcExemplo, estoque);
+        telaFuncionario.setVisible(true);
     }
 
     public static void main(String[] args) {
