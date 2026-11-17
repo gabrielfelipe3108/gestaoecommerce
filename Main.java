@@ -1,5 +1,7 @@
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import logica.*;
 
 public class Main {
     private static final boolean USAR_CORES = true;
@@ -17,10 +19,9 @@ public class Main {
 
         Estoque estoque = new Estoque();
 
-        //Exemplos para conseguir rodar
+        // Exemplos para conseguir rodar
         Cliente clienteExemplo = new Cliente("Ana Souza", "123.456.789-00", "ana@email.com", "Rua das Flores, 100");
         Funcionario funcExemplo = new Funcionario("Carlos Silva", "987.654.321-11", "carlos@email.com", "FUNC-42", estoque);
-        Distribuidor distExemplo = new Distribuidor("Tech Distribuidora LTDA", "12.345.678/0001-99", "contato@techdist.com");
 
         funcExemplo.cadastrarProduto(new ProdutoFisico(1, "Teclado Mecanico", 250.00, 0.9, "45x15x4 cm"), 10);
         funcExemplo.cadastrarProduto(new ProdutoDigital(2, "Curso de Java", 120.00, 850.0, "https://exemplo.com/curso-java"), 100);
@@ -29,23 +30,19 @@ public class Main {
             titulo("MENU PRINCIPAL");
             opcao("1", "Acessar como Cliente (Comprar)");
             opcao("2", "Acessar como Funcionario (Gerenciar Estoque/Produtos)");
-            opcao("3", "Acessar como Distribuidor");
             opcao("0", "Sair");
             System.out.print("Escolha uma opcao: ");
 
             if (scanner.hasNextInt()) {
                 opcao = scanner.nextInt();
-                scanner.nextLine(); // Limpar o buffer
+                scanner.nextLine();
 
                 switch (opcao) {
                     case 1:
-                        exibirMenuCliente(scanner, clienteExemplo);
+                        exibirMenuCliente(scanner, clienteExemplo, estoque);
                         break;
                     case 2:
                         exibirMenuFuncionario(scanner, funcExemplo);
-                        break;
-                    case 3:
-                        exibirMenuDistribuidor(scanner, distExemplo, estoque);
                         break;
                     case 0:
                         System.out.println("Encerrando o sistema. Ate logo!");
@@ -55,7 +52,7 @@ public class Main {
                 }
             } else {
                 erro("Por favor, digite um numero valido.");
-                scanner.nextLine(); // Descarta entrada invalida
+                scanner.nextLine();
             }
 
         } while (opcao != 0);
@@ -79,10 +76,137 @@ public class Main {
         System.out.println(VERDE + texto + RESET);
     }
 
-    private static void exibirMenuCliente(Scanner scanner, Cliente cliente) {
-        titulo("AREA DO CLIENTE");
-        System.out.println("Bem-vindo(a), " + cliente.getNome() + "!");
-        System.out.println("Endereco cadastrado: " + cliente.getEndereco());
+    private static void exibirMenuCliente(Scanner scanner, Cliente cliente, Estoque estoque) {
+        int opcao = -1;
+        while (opcao != 0) {
+            titulo("AREA DO CLIENTE");
+            System.out.println("Bem-vindo(a), " + cliente.getNome() + "!");
+            System.out.println("Endereco: " + cliente.getEndereco());
+            opcao("1", "Listar produtos disponiveis");
+            opcao("2", "Adicionar produto ao carrinho");
+            opcao("3", "Ver carrinho e finalizar compra");
+            opcao("0", "Voltar ao menu principal");
+            System.out.print("Escolha uma opcao: ");
+
+            try {
+                opcao = lerInt(scanner);
+                switch (opcao) {
+                    case 1:
+                        listarProdutosCliente(scanner, estoque);
+                        break;
+                    case 2:
+                        adicionarAoCarrinho(scanner, cliente, estoque);
+                        break;
+                    case 3:
+                        gerenciarCarrinho(scanner, cliente, estoque);
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        erro("Opcao invalida! Tente novamente.");
+                }
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                erro("Erro: " + e.getMessage());
+                System.out.println("\nPressione ENTER para continuar...");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private static void listarProdutosCliente(Scanner scanner, Estoque estoque) {
+        List<Produto> produtos = estoque.listarProdutos();
+        if (produtos.isEmpty()) {
+            System.out.println("Nenhum produto disponivel no momento.");
+        } else {
+            System.out.println("\n" + NEGRITO + "COD | TIPO     | NOME                      | PRECO FINAL | QTD" + RESET);
+            for (Produto p : produtos) {
+                int qtd = estoque.consultarEstoque(p.getCodigo());
+                String tipo = (p instanceof ProdutoFisico) ? "Fisico" : "Digital";
+                System.out.printf("%-3d | %-8s | %-25s | R$ %8.2f | %d%n",
+                        p.getCodigo(), tipo, p.getNome(), p.calcularPrecoFinal(), qtd);
+            }
+        }
+        System.out.println("\nPressione ENTER para voltar...");
+        scanner.nextLine();
+    }
+
+    private static void adicionarAoCarrinho(Scanner scanner, Cliente cliente, Estoque estoque) {
+        titulo("ADICIONAR PRODUTO AO CARRINHO");
+        List<Produto> produtos = estoque.listarProdutos();
+        if (produtos.isEmpty()) {
+            System.out.println("Nenhum produto disponivel.");
+            System.out.println("\nPressione ENTER para voltar...");
+            scanner.nextLine();
+            return;
+        }
+
+        System.out.println(NEGRITO + "COD | NOME                      | PRECO FINAL | QTD DISPONIVEL" + RESET);
+        for (Produto p : produtos) {
+            int qtd = estoque.consultarEstoque(p.getCodigo());
+            System.out.printf("%-3d | %-25s | R$ %8.2f | %d%n",
+                    p.getCodigo(), p.getNome(), p.calcularPrecoFinal(), qtd);
+        }
+
+        System.out.print("\nDigite o codigo do produto: ");
+        int codigo = lerInt(scanner);
+        Produto produto = estoque.buscarProduto(codigo);
+
+        if (produto == null) {
+            erro("Produto nao encontrado!");
+        } else {
+            System.out.print("Digite a quantidade desejada: ");
+            int qtdDesejada = lerInt(scanner);
+
+            int qtdDisponivel = estoque.consultarEstoque(codigo);
+            if (qtdDesejada <= 0) {
+                erro("A quantidade deve ser maior que zero.");
+            } else if (qtdDesejada > qtdDisponivel) {
+                erro("Estoque insuficiente! Disponivel: " + qtdDisponivel);
+            } else {
+                cliente.getCarrinho().adicionarProduto(produto, qtdDesejada);
+                sucesso("Produto \"" + produto.getNome() + "\" adicionado ao carrinho!");
+            }
+        }
+
+        System.out.println("\nPressione ENTER para continuar...");
+        scanner.nextLine();
+    }
+
+    private static void gerenciarCarrinho(Scanner scanner, Cliente cliente, Estoque estoque) {
+        CarrinhoDeCompras carrinho = cliente.getCarrinho();
+        
+        if (carrinho.estaVazio()) {
+            System.out.println("\nSeu carrinho esta vazio.");
+            System.out.println("\nPressione ENTER para voltar...");
+            scanner.nextLine();
+            return;
+        }
+
+        titulo("MEU CARRINHO DE COMPRAS");
+        System.out.println(NEGRITO + "NOME                      | PRECO UNIT. | QTD | SUBTOTAL" + RESET);
+        for (Map.Entry<Produto, Integer> entry : carrinho.getItens().entrySet()) {
+            Produto p = entry.getKey();
+            int qtd = entry.getValue();
+            double subtotal = p.calcularPrecoFinal() * qtd;
+            System.out.printf("%-25s | R$ %8.2f | %3d | R$ %8.2f%n",
+                    p.getNome(), p.calcularPrecoFinal(), qtd, subtotal);
+        }
+        System.out.println("---------------------------------------------------------");
+        System.out.printf(NEGRITO + "VALOR TOTAL DA COMPRA: R$ %.2f%n" + RESET, carrinho.calcularTotal());
+
+        System.out.println("\nDeseja finalizar a compra? (1 - Sim | 2 - Voltar ao menu)");
+        System.out.print("Escolha uma opcao: ");
+        int opcaoFinal = lerInt(scanner);
+
+        if (opcaoFinal == 1) {
+            carrinho.finalizarCompra(estoque);
+            sucesso("Compra finalizada com sucesso! O estoque foi atualizado.");
+        } else {
+            System.out.println("Retornando ao menu...");
+        }
+
+        System.out.println("\nPressione ENTER para continuar...");
+        scanner.nextLine();
     }
 
     private static void exibirMenuFuncionario(Scanner scanner, Funcionario func) {
@@ -107,7 +231,7 @@ public class Main {
                         cadastrarProdutoDigital(scanner, func);
                         break;
                     case 3:
-                        listarProdutos(func.listarProdutos(), func);
+                        listarProdutos(scanner, func.listarProdutos(), func);
                         break;
                     case 4:
                         System.out.print("Codigo do produto: ");
@@ -164,64 +288,19 @@ public class Main {
         sucesso("Produto digital cadastrado com sucesso!");
     }
 
-    private static void listarProdutos(List<Produto> produtos, Funcionario func) {
+    private static void listarProdutos(Scanner scanner, List<Produto> produtos, Funcionario func) {
         if (produtos.isEmpty()) {
             System.out.println("Nenhum produto cadastrado.");
-            return;
-        }
-        System.out.println("\n" + NEGRITO + "COD | TIPO     | NOME                      | PRECO FINAL | QTD" + RESET);
-        for (Produto p : produtos) {
-            String tipo = (p instanceof ProdutoFisico) ? "Fisico" : "Digital";
-            System.out.printf("%-3d | %-8s | %-25s | R$ %8.2f | %d%n",
-                    p.getCodigo(), tipo, p.getNome(), p.calcularPrecoFinal(), func.consultarQuantidade(p.getCodigo()));
-        }
-    }
-
-    private static void exibirMenuDistribuidor(Scanner scanner, Distribuidor dist, Estoque estoque) {
-        int opcao = -1;
-        while (opcao != 0) {
-            titulo("AREA DO DISTRIBUIDOR");
-            opcao("1", "Ver informacoes do distribuidor");
-            opcao("2", "Fornecer produtos ao estoque");
-            opcao("0", "Voltar ao menu principal");
-            System.out.print("Escolha uma opcao: ");
-
-            try {
-                opcao = lerInt(scanner);
-                switch (opcao) {
-                    case 1:
-                        exibirInfoDistribuidor(dist);
-                        break;
-                    case 2:
-                        System.out.print("Codigo do produto a fornecer: ");
-                        int codigo = lerInt(scanner);
-                        Produto produto = estoque.buscarProduto(codigo);
-                        if (produto == null) {
-                            erro("Produto nao encontrado. O funcionario precisa cadastra-lo antes.");
-                            break;
-                        }
-                        System.out.print("Quantidade fornecida: ");
-                        int qtd = lerInt(scanner);
-                        dist.fornecerProdutos(estoque, produto, qtd);
-                        sucesso("Fornecimento registrado. Estoque atual de \"" + produto.getNome()
-                                + "\": " + estoque.consultarEstoque(codigo));
-                        break;
-                    case 0:
-                        break;
-                    default:
-                        erro("Opcao invalida! Tente novamente.");
-                }
-            } catch (IllegalArgumentException e) {
-                erro("Erro: " + e.getMessage());
+        } else {
+            System.out.println("\n" + NEGRITO + "COD | TIPO     | NOME                      | PRECO FINAL | QTD" + RESET);
+            for (Produto p : produtos) {
+                String tipo = (p instanceof ProdutoFisico) ? "Fisico" : "Digital";
+                System.out.printf("%-3d | %-8s | %-25s | R$ %8.2f | %d%n",
+                        p.getCodigo(), tipo, p.getNome(), p.calcularPrecoFinal(), func.consultarQuantidade(p.getCodigo()));
             }
         }
-    }
-
-    private static void exibirInfoDistribuidor(Distribuidor dist) {
-        titulo("DADOS DO DISTRIBUIDOR");
-        System.out.println("Razao Social: " + dist.getNome());
-        System.out.println("CNPJ: " + dist.getCnpj());
-        System.out.println("E-mail: " + dist.getEmail());
+        System.out.println("\nPressione ENTER para voltar...");
+        scanner.nextLine();
     }
 
     private static int lerInt(Scanner scanner) {
